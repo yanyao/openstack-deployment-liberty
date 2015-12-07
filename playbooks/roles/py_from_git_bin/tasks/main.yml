@@ -1,5 +1,5 @@
 ---
-# Copyright 2015, Rackspace US, Inc.
+# Copyright 2014, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## OpenStack Source Code Release
-openstack_release: 12.0.0
+- name: Download python2-lxc
+  get_url:
+    url: "{{ openstack_repo_url }}/downloads/python2-lxc-master.zip"
+    dest: "/tmp/python2-lxc.zip"
+    mode: "0644"
 
-# Global minimum kernel requirement
-openstack_host_required_kernel: 3.13.0-34-generic
+- name: Extract python2-lxc
+  unarchive:
+    copy: "no"
+    src: "/tmp/python2-lxc.zip"
+    dest: "/opt"
+
+- name: Install pip packages
+  pip:
+    name: "/opt/python2-lxc-master"
+    state: present
+  register: install_packages
+  until: install_packages|success
+  retries: 5
+  delay: 2
+  tags:
+    - pip-install

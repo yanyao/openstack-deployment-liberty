@@ -1,5 +1,5 @@
 ---
-# Copyright 2015, Rackspace US, Inc.
+# Copyright 2014, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## OpenStack Source Code Release
-openstack_release: 12.0.0
+component_skel:
+  memcached:
+    belongs_to:
+      - memcached_all
 
-# Global minimum kernel requirement
-openstack_host_required_kernel: 3.13.0-34-generic
+
+container_skel:
+  memcached_container:
+    belongs_to:
+      - infra_containers
+      - shared-infra_containers
+    contains:
+      - memcached
+    properties:
+      service_name: memcached
+      container_release: trusty

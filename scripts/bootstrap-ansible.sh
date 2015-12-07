@@ -44,7 +44,7 @@ ssh_key_create
 
 # Install the base packages
 if [[ $HOST_DISTRO =~ ^(Ubuntu|Debian) ]]; then
-    apt-get update && apt-get -y install git python-all python-dev curl autoconf g++ python2.7-dev < /dev/null
+    apt-get update && apt-get --force-yes -y install git python-all python-dev curl autoconf g++ python2.7-dev < /dev/null
 elif [[ $HOST_DISTRO =~ ^(CentOS|Red Hat) ]]; then
     yum check-update && yum -y install git python2 curl autoconf gcc-c++ python2-devel
 elif [[ $HOST_DISTRO =~ ^Fedora ]]; then
@@ -94,6 +94,11 @@ if [ -f "${ANSIBLE_ROLE_FILE}" ];then
                            --ignore-errors \
                            --force
 fi
+
+#patch ansible apt module to make sure apt-get always 'force-yes'
+
+sed -i '513{s/no/yes/g}' /usr/local/lib/python2.7/dist-packages/ansible/modules/core/packaging/os/apt.py
+
 
 # Create openstack ansible wrapper tool
 cat > /usr/local/bin/openstack-ansible <<EOF

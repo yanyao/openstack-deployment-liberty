@@ -1,5 +1,5 @@
 ---
-# Copyright 2015, Rackspace US, Inc.
+# Copyright 2014, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## OpenStack Source Code Release
-openstack_release: 12.0.0
+component_skel:
+  keystone:
+    belongs_to:
+      - keystone_all
 
-# Global minimum kernel requirement
-openstack_host_required_kernel: 3.13.0-34-generic
+
+container_skel:
+  keystone_container:
+    belongs_to:
+      - infra_containers
+      - identity_containers
+    contains:
+      - keystone
+    properties:
+      service_name: keystone
+      container_release: trusty
+
+
+physical_skel:
+  identity_containers:
+    belongs_to:
+      - all_containers
+  identity_hosts:
+    belongs_to:
+      - hosts

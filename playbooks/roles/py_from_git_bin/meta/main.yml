@@ -1,5 +1,5 @@
 ---
-# Copyright 2015, Rackspace US, Inc.
+# Copyright 2014, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## OpenStack Source Code Release
-openstack_release: 12.0.0
-
-# Global minimum kernel requirement
-openstack_host_required_kernel: 3.13.0-34-generic
+galaxy_info:
+  author: Yanwei Yao
+  description: Install a python package from a git zip
+  company: CloudSource
+  license: Apache2
+  min_ansible_version: 1.6.6
+  platforms:
+    - name: Ubuntu
+      versions:
+        - trusty
+  categories:
+    - cloud
+    - python
+    - development
+    - openstack
+dependencies:
+  - pip_install

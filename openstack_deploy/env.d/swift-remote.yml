@@ -1,5 +1,5 @@
 ---
-# Copyright 2015, Rackspace US, Inc.
+# Copyright 2014, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## OpenStack Source Code Release
-openstack_release: 12.0.0
+component_skel:
+  swift_remote:
+    belongs_to:
+      - swift_remote_all
 
-# Global minimum kernel requirement
-openstack_host_required_kernel: 3.13.0-34-generic
+
+container_skel:
+  swift_remote_container:
+    belongs_to:
+      - swift-remote_containers
+    contains:
+      - swift_remote
+    properties:
+      is_metal: true
+      service_name: swift
+      container_release: trusty
+
+
+physical_skel:
+  swift-remote_containers:
+    belongs_to:
+      - remote_containers
+  swift-remote_hosts:
+    belongs_to:
+      - remote

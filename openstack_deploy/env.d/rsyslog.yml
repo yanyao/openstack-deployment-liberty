@@ -1,5 +1,5 @@
 ---
-# Copyright 2015, Rackspace US, Inc.
+# Copyright 2014, Rackspace US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,8 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-## OpenStack Source Code Release
-openstack_release: 12.0.0
+component_skel:
+  rsyslog:
+    belongs_to:
+      - rsyslog_all
 
-# Global minimum kernel requirement
-openstack_host_required_kernel: 3.13.0-34-generic
+
+container_skel:
+  rsyslog_container:
+    belongs_to:
+      - log_containers
+    contains:
+      - rsyslog
+    properties:
+      service_name: rsyslog
+      container_release: trusty
+
+
+physical_skel:
+  log_containers:
+    belongs_to:
+      - all_containers
+  log_hosts:
+    belongs_to:
+      - hosts
