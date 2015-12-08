@@ -258,4 +258,3 @@ lxc_container_caches:
 
 galera_client_package_url: http://repo:8181/downloads/percona-xtrabackup-22_2.2.13-1.trusty_amd64.deb
 galera_package_url: "{{ galera_client_package_url }}"
-lxc_container_release: trusty-l
