@@ -119,7 +119,7 @@ neutron_services:
    config_type: "ini"
  neutron-metering-agent:
    service_name: neutron-metering-agent
-   service_en: True
+   service_en: "{{ neutron_metering }}"
    service_conf: metering_agent.ini
    service_group: neutron_agent
    config_options: --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/metering_agent.ini
@@ -127,7 +127,7 @@ neutron_services:
    config_type: "ini"
  neutron-l3-agent:
    service_name: neutron-l3-agent
-   service_en: True
+   service_en: "{{ neutron_l3 }}"
    service_conf: l3_agent.ini
    service_group: neutron_agent
    service_rootwrap: rootwrap.d/l3.filters
@@ -153,6 +153,14 @@ neutron_services:
 # Please add the LoadBalancerPlugin to the neutron_plugin_base list
 neutron_lbaas: "{% if 'neutron_lbaas.services.loadbalancer.plugin.LoadBalancerPlugin' in neutron_plugin_base %}True{% else %}False{% endif %}"
 
+## Neutron L3
+## Please add the L3RouterPlugin to the neutron_plugin_base list
+neutron_l3: "{% if 'neutron.services.l3_router.l3_router_plugin.L3RouterPlugin' in neutron_plugin_base %}True{% else %}False{% endif %}"
+
+## Neutron Metering
+# Please add the MeteringPlugin to the neutron_plugin_base list
+neutron_metering: "{% if 'neutron.services.metering.metering_plugin.MeteringPlugin' in neutron_plugin_base %}True{% else %}False{% endif %}"
+
 ## Drivers
 neutron_driver_network_scheduler: neutron.scheduler.dhcp_agent_scheduler.WeightScheduler
 neutron_driver_router_scheduler: neutron.scheduler.l3_agent_scheduler.LeastRoutersScheduler
@@ -160,7 +168,6 @@ neutron_driver_loadbalancer_pool_scheduler: neutron_lbaas.services.loadbalancer.
 neutron_driver_interface: neutron.agent.linux.interface.BridgeInterfaceDriver
 neutron_driver_metering: neutron.services.metering.drivers.iptables.iptables_driver.IptablesMeteringDriver
 neutron_driver_dhcp: neutron.agent.linux.dhcp.Dnsmasq
-neutron_driver_notification: messagingv2
 neutron_driver_quota: neutron.db.quota.driver.DbQuotaDriver
 neutron_driver_firewall: neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
 
@@ -238,6 +245,9 @@ neutron_dhcp_config:
 neutron_ml2_drivers_type: "flat,vlan,vxlan,local"
 neutron_ml2_mechanism_drivers: "linuxbridge,l2population"
 
+# Enable or disable L2 Population.
+neutron_l2_population: "False"
+
 ## Set this to configure overlay networks. The default is set as an empty hash.
 # neutron_overlay_network:
 #   address: "172.29.241.248"
@@ -250,7 +260,7 @@ neutron_overlay_network: {}
 ## The neutron multicast group address. This should be set as a host variable if used.
 ## This defaults to an empty string
 # neutron_vxlan_group: 239.1.1.100
-neutron_vxlan_group: ""
+neutron_vxlan_group: "239.1.1.1"
 
 ## Set this variable to configure the provider networks that will be available
 ## When setting up networking in things like the ml2_conf.ini file. Normally
@@ -280,6 +290,8 @@ neutron_rpc_thread_pool_size: 64
 neutron_rpc_conn_pool_size: 30
 neutron_rpc_response_timeout: 60
 neutron_rpc_workers: 1
+
+neutron_service_in_ldap: false
 
 ## Policy vars
 # Provide a list of access controls to update the default policy.json with. These changes will be merged
