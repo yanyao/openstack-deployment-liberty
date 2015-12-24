@@ -32,7 +32,7 @@ ansible.cfg files
 -----------------
 
 You can create your own playbook, variable, and role structure while still
-including the openstack-ansible roles and libaries by putting an
+including the openstack-ansible roles and libraries by putting an
 ``ansible.cfg`` file in your ``playbooks`` directory.
 
 The relevant options for Ansible 1.9 (included in openstack-ansible)
@@ -113,6 +113,8 @@ Ordering and Precedence
 ``user_*.yml`` variables are just YAML variable files. They will be sourced
 in alphanumeric order by ``openstack-ansible``.
 
+.. _adding-galaxy-roles:
+
 Adding Galaxy roles
 -------------------
 
@@ -124,7 +126,7 @@ will be installed by the
 Setting overrides in configuration files
 ----------------------------------------
 
-All of the services that use YAML, JSON, or INI for configuration can recieve
+All of the services that use YAML, JSON, or INI for configuration can receive
 overrides through the use of a Ansible action plugin named ``config_template``.
 The configuration template engine allows a deployer to use a simple dictionary
 to modify or add items into configuration files at run time that may not have a

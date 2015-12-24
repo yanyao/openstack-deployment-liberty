@@ -17,7 +17,6 @@
 set -e -u -x
 
 ## Variables -----------------------------------------------------------------
-export ANSIBLE_PARAMETERS=${ANSIBLE_PARAMETERS:-"-v"}
 export MAX_RETRIES=${MAX_RETRIES:-"2"}
 # tempest and testr options, default is to run tempest in serial
 export RUN_TEMPEST_OPTS=${RUN_TEMPEST_OPTS:-'--serial'}
@@ -65,19 +64,40 @@ iptables -P OUTPUT ACCEPT
 if [ -f /etc/nodepool/provider -a -s /etc/nodepool/provider ]; then
   source /etc/nodepool/provider
 
-  if [[ ${NODEPOOL_PROVIDER} == "rax"* ]]; then
+  # Get the fastest possible Linux mirror depending on the datacenter where the
+  # tests are running.
+  case ${NODEPOOL_PROVIDER} in
+  "rax-dfw"*)
+      export UBUNTU_REPO="http://dfw.mirror.rackspace.com/ubuntu"
+      ;;
+  "rax-ord"*)
+      export UBUNTU_REPO="http://ord.mirror.rackspace.com/ubuntu"
+      ;;
+  "rax-iad"*)
+      export UBUNTU_REPO="http://iad.mirror.rackspace.com/ubuntu"
+      ;;
+  "hpcloud"*)
+      export UBUNTU_REPO="http://${NODEPOOL_AZ}.clouds.archive.ubuntu.com/ubuntu"
+      ;;
+  "ovh-gra1"*)
+      export UBUNTU_REPO="http://ubuntu.mirrors.ovh.net/ubuntu"
+      ;;
+  "ovh-bhs1"*)
+      export UBUNTU_REPO="http://ubuntu.bhs.mirrors.ovh.net/ubuntu"
+      ;;
+  "bluebox-sjc1"*)
+      export UBUNTU_REPO="http://ord.mirror.rackspace.com/ubuntu"
+      ;;
+  "internap-nyj01"*)
+      export UBUNTU_REPO="http://iad.mirror.rackspace.com/ubuntu"
+      ;;
+  esac
 
-    # Set the Ubuntu Repository for the AIO to the RAX Mirror
-    export BOOTSTRAP_OPTS="${BOOTSTRAP_OPTS} bootstrap_host_ubuntu_repo=http://mirror.rackspace.com/ubuntu"
-    export BOOTSTRAP_OPTS="${BOOTSTRAP_OPTS} bootstrap_host_ubuntu_security_repo=http://mirror.rackspace.com/ubuntu"
-
-  elif [[ ${NODEPOOL_PROVIDER} == "hpcloud"* ]]; then
-
-    # Set the Ubuntu Repository for the AIO to the HP Cloud Mirror
-    export BOOTSTRAP_OPTS="${BOOTSTRAP_OPTS} bootstrap_host_ubuntu_repo=http://${NODEPOOL_AZ}.clouds.archive.ubuntu.com/ubuntu"
-    export BOOTSTRAP_OPTS="${BOOTSTRAP_OPTS} bootstrap_host_ubuntu_security_repo=http://${NODEPOOL_AZ}.clouds.archive.ubuntu.com/ubuntu"
-
+  if [ -n "${UBUNTU_REPO:-}" ]; then
+    export BOOTSTRAP_OPTS="${BOOTSTRAP_OPTS} bootstrap_host_ubuntu_repo=${UBUNTU_REPO}"
+    export BOOTSTRAP_OPTS="${BOOTSTRAP_OPTS} bootstrap_host_ubuntu_security_repo=${UBUNTU_REPO}"
   fi
+
 fi
 
 # Bootstrap an AIO
@@ -101,7 +121,10 @@ pushd $(dirname ${0})/../playbooks
   mkdir -p /openstack/log/ansible-logging
   sed -i '/\[defaults\]/a log_path = /openstack/log/ansible-logging/ansible.log' ansible.cfg
 
-  # Enable detailed task profiling
+  # This plugin makes the output easier to read
+  wget -O plugins/callbacks/human_log.py https://gist.githubusercontent.com/cliffano/9868180/raw/f360f306b3c6d689734a6aa8773a00edf16a0054/human_log.py
+
+  # Enable callback plugins
   sed -i '/\[defaults\]/a callback_plugins = plugins/callbacks' ansible.cfg
 popd
 
